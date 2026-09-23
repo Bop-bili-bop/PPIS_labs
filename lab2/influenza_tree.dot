@@ -1,0 +1,45 @@
+digraph InfluenzaDecisionTree {
+  graph [rankdir=TB, labelloc="t", label="Lab 2 — Variant 6: Influenza decision tree\nEducational prototype, not a medical diagnostic tool"];
+  node [fontname="Arial", shape=diamond];
+  edge [fontname="Arial"];
+
+  acute [label="Acute onset?"];
+  fever [label="Elevated temperature?"];
+  high [label="Very high temperature\n(toward 40 C)?"];
+  chills [label="Chills?"];
+  high_headache [label="Headache?"];
+  high_no_chills_headache [label="Headache?"];
+  high_weakness [label="General weakness?"];
+  mild_headache [label="Headache?"];
+  mild_weakness [label="General weakness?"];
+  aches [label="Muscle pain or\nbody aches?"];
+
+  consistent [shape=box, style="rounded,filled", fillcolor="#d8f3dc",
+              label="Consistent with the\ninfluenza knowledge model"];
+  mild [shape=box, style="rounded,filled", fillcolor="#fff3bf",
+        label="Mild influenza-like\npresentation"];
+  insufficient [shape=box, style="rounded,filled", fillcolor="#f1f3f5",
+                label="Insufficient evidence"];
+
+  acute -> fever [label="yes"];
+  acute -> insufficient [label="no"];
+  fever -> high [label="yes"];
+  fever -> insufficient [label="no"];
+  high -> chills [label="yes"];
+  high -> mild_headache [label="no"];
+  chills -> high_headache [label="yes"];
+  chills -> high_no_chills_headache [label="no"];
+  high_headache -> consistent [label="yes"];
+  high_headache -> insufficient [label="no"];
+  high_no_chills_headache -> high_weakness [label="yes"];
+  high_no_chills_headache -> insufficient [label="no"];
+  high_weakness -> consistent [label="yes"];
+  high_weakness -> insufficient [label="no"];
+  mild_headache -> mild_weakness [label="yes"];
+  mild_headache -> insufficient [label="no"];
+  mild_weakness -> aches [label="yes"];
+  mild_weakness -> insufficient [label="no"];
+  aches -> mild [label="yes"];
+  aches -> insufficient [label="no"];
+}
+

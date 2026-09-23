@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ПІІС — Лабораторна №5</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; }
+    body { max-width: 900px; margin: 2rem auto; padding: 0 1rem; background: #f5f7fb; color: #172033; }
+    section { background: white; border-radius: 12px; padding: 1.25rem; margin: 1rem 0; box-shadow: 0 2px 10px #1d2a4414; }
+    label { display: block; font-weight: 600; margin-bottom: .35rem; }
+    input, select, button { padding: .65rem; border: 1px solid #aab4c5; border-radius: 6px; }
+    input { width: min(90%, 32rem); } button { background: #2857b8; color: white; cursor: pointer; }
+    .error { color: #a01818; font-weight: 600; } .status { padding: .6rem; background: #eef3ff; }
+  </style>
+</head>
+<body>
+  <h1>ПІІС — Лабораторна №5</h1>
+  <p>Навчальна демонстрація парсингу веб-сторінок, pandas і Flask.</p>
+  {% if error %}<p class="error">Помилка: {{ error }}</p>{% endif %}
+
+  <section>
+    <h2>1. Аналіз даних</h2>
+    <form method="post" action="{{ url_for('analyze') }}">
+      <label for="category">Категорія товарів</label>
+      <select id="category" name="category"><option>A</option><option>B</option></select>
+      <button type="submit">Обчислити середню ціну</button>
+    </form>
+    {% if analysis %}<p>Рядків: {{ analysis.selected_rows }}; середня ціна: {{ '%.2f'|format(analysis.mean) }}</p>{% endif %}
+  </section>
+
+  <section>
+    <h2>2. Парсинг веб-сторінки</h2>
+    <form method="post" action="{{ url_for('scrape') }}">
+      <label for="url">Абсолютна HTTP(S)-адреса</label>
+      <input id="url" name="url" type="url" value="https://example.com" required>
+      <button type="submit">Отримати заголовки</button>
+    </form>
+    {% if headings is not none %}
+      {% if headings %}<ul>{% for item in headings %}<li><strong>{{ item.level }}</strong>: {{ item.text }}</li>{% endfor %}</ul>
+      {% else %}<p>Заголовків h1–h3 не знайдено.</p>{% endif %}
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>3. Gemini API</h2>
+    {% if gemini_configured %}<p class="status">GEMINI_API_KEY налаштовано. Ключ не відображається.</p>
+    {% else %}<p class="status">Gemini не налаштовано, але аналіз CSV і веб-парсер повністю доступні. Додайте ключ до локального <code>.env</code> за потреби.</p>{% endif %}
+  </section>
+</body>
+</html>
