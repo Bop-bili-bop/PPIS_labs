@@ -1,0 +1,16 @@
+$ python -m src.web_scraper https://example.com
+h1: Example Domain
+
+$ python -m src.data_analysis
+Filter: category == 'A'
+Selected rows: 3
+Mean price: 526.67
+
+$ pytest -q
+............                                                             [100%]
+12 passed in 1.19s
+
+Gemini API integration implemented but was not executed because GEMINI_API_KEY is intentionally not stored in the repository.
+
+$ python -m src.app + curl http://127.0.0.1:5000/
+HTTP 200; page contains «ПІІС — Лабораторна №5» and missing-key status. Flask stopped with Ctrl+C.
