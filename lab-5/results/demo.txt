@@ -1,0 +1,6 @@
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/venv/bin/python -m src.data_analysis
+Filter: category == 'A'
+Selected rows: 3
+Mean price: 526.67
+
+Exit code: 0

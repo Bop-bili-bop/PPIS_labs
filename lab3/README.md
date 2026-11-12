@@ -1,47 +1,33 @@
-# Лабораторная работа 3 — CLIPS, вариант 6 «Грип»
+# №3 — CLIPS, варіант 6 «Грип»
 
-Это **учебный прототип экспертной системы**, а не средство медицинской
-диагностики. Он использует только признаки из описания варианта: острое
-начало, температуру, озноб, головную боль, слабость, боли в мышцах/суставах,
-светобоязнь и отдельные признаки тяжёлого течения.
+[Повний звіт із полем знань, ієрархією, правилами та трасуванням](REPORT.md).
 
-## Модель и правила
+З кореня репозиторію:
 
-`influenza.clp` содержит требуемые конструкции:
-
-- `deftemplate` задаёт пациента, симптомы, температуру, промежуточные
-  свидетельства, тяжесть и итог;
-- `deffacts` создаёт начальный факт о демонстрационном характере системы;
-- `defglobal` хранит границы высокой и субфебрильной температуры;
-- `deffunction` классифицирует температуру, загружает сценарии и печатает итог;
-- отдельные `defrule` выводят температурную категорию, сочетания симптомов,
-  тяжесть и заключение. Итоговое правило намеренно не является одним большим
-  правилом: оно использует промежуточные факты, полученные другими правилами.
-
-Заключения `consistent-with-influenza-model`,
-`mild-influenza-like-presentation` и `insufficient-evidence` означают лишь
-совпадение с учебной моделью.
-
-## Сценарии и ожидаемый вывод
-
-| Сценарий | Начальные факты | Ключевые активируемые правила | Выведенные факты и итог |
-|---|---|---|---|
-| `strong` | Острое начало, 39.7 °C (3 дня), озноб, головная боль лобной локализации, усиление при движении глаз, слабость, мышечная боль, светобоязнь | `classify-temperature`, `acute-fever-with-chills`, `intoxication-pattern`, `characteristic-headache`, `systemic-aches`, `marked-systemic-presentation`, `strong-model-match` | Свидетельства нескольких независимых сочетаний, тяжесть `marked`; `consistent-with-influenza-model` |
-| `mild` | Острое начало, 37.6 °C (2 дня), головная боль, общая слабость, ломота в теле | `classify-temperature`, `intoxication-pattern`, `systemic-aches`, `mild-model-match` | Категория `subfebrile`, системная ломота, тяжесть `mild`; `mild-influenza-like-presentation` |
-| `insufficient` | 36.7 °C и слезотечение | `insufficient-evidence` | `insufficient-evidence` |
-
-`run_all.clp` включает `(watch rules)`, поэтому журнал показывает реальные
-срабатывания правил. Перед каждым сценарием выполняется `reset`, а затем
-загружаются только его факты.
-
-```sh
-clips -f2 lab3/run_all.clp
+```bash
+python -m pip install -r requirements.txt
+python lab3/run.py
+python scripts/check_models.py
 ```
 
-Для запуска одного сценария в REPL:
+`clipspy` завантажує справжній рушій CLIPS і виконує `influenza.clp`.
+У консолі CLIPS можна використати `clips -f2 lab3/run_all.clp`.
+
+Для власних даних виконайте reset, додайте факти patient/temperature/symptom
+та запустіть run. Приклад:
 
 ```clips
 (load "lab3/influenza.clp")
+(reset)
+(assert (patient (id example)))
+(assert (temperature (patient example) (degrees 37.6)))
+(assert (symptom (patient example) (name acute-onset)))
+(assert (symptom (patient example) (name general-weakness)))
+(assert (symptom (patient example) (name headache)))
 (watch rules)
-(run-scenario strong) ; также mild или insufficient
+(run)
+(show-result)
 ```
+
+Результат: `mild-influenza-like-presentation`. Дані сценаріїв розділено
+через reset. Правила свідчень виконуються перед правилами остаточного висновку.

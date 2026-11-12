@@ -1,0 +1,9 @@
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/runtime/root/usr/bin/sbcl --core /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/runtime/root/usr/lib/sbcl/sbcl.core --noinform --non-interactive --load lab2/influenza_tree.lisp --eval (influenza-tree:diagnose-interactively)
+Did symptoms begin acutely? [yes/no]: Please answer yes or no.
+Did symptoms begin acutely? [yes/no]: Is temperature >= 37.1 C? [yes/no]: Is general weakness present? [yes/no]: Are chills present? [yes/no]: Is there muscle, joint or body pain? [yes/no]: 
+Result: Symptoms are consistent with the influenza knowledge model
+Reason: The combination includes acute onset, fever and several characteristic early/systemic findings.
+
+Educational prototype only; this is not a medical diagnosis.
+
+Exit code: 0

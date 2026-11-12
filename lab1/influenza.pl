@@ -18,6 +18,8 @@ fallback conclusion, as absent under Prolog's closed-world assumption).
             diagnostic_result/2
           ]).
 
+:- use_module(library(lists), [member/2]).
+
 :- discontiguous observation/2, temperature/2, fever_duration/2.
 
 % Domain vocabulary: these facts make the modeled relationships explicit.
@@ -65,30 +67,8 @@ symptom_group(hallucinations, severe).
 symptom_group(nervous_system_symptom, severe).
 symptom_group(seizures, severe).
 
-% Example 1: a symptom combination strongly matching the model.
-temperature(alina, 39.8).
-fever_duration(alina, 4).
-observation(alina, acute_onset).
-observation(alina, chills).
-observation(alina, frontal_headache).
-observation(alina, headache_worse_with_eye_movement).
-observation(alina, general_weakness).
-observation(alina, muscle_pain).
-observation(alina, body_aches).
-observation(alina, photophobia).
-
-% Example 2: a mild influenza-like presentation with subfebrile temperature.
-temperature(boris, 37.6).
-fever_duration(boris, 2).
-observation(boris, acute_onset).
-observation(boris, headache).
-observation(boris, general_weakness).
-observation(boris, body_aches).
-
-% Example 3: too few findings to match an influenza pattern.
-temperature(vira, 36.7).
-observation(vira, tearing).
-observation(vira, headache).
+:- dynamic observation/2, temperature/2, fever_duration/2.
+:- include('observations.pl').
 
 % Derived findings demonstrate variables, arithmetic comparison and inference.
 finding(Patient, Symptom) :-
@@ -159,7 +139,9 @@ strong_influenza_evidence(Patient) :-
 strong_influenza_evidence(Patient) :-
     finding(Patient, acute_onset),
     evidence_pattern(Patient, fever_headache_weakness),
-    evidence_pattern(Patient, characteristic_headache_frontal).
+    ( evidence_pattern(Patient, characteristic_headache_frontal)
+    ; evidence_pattern(Patient, characteristic_headache_retro_orbital)
+    ).
 
 mild_influenza_evidence(Patient) :-
     finding(Patient, acute_onset),
@@ -169,15 +151,16 @@ mild_influenza_evidence(Patient) :-
     ; finding(Patient, body_aches)
     ).
 
-diagnostic_result(Patient, symptoms_consistent_with_influenza_model) :-
-    once(strong_influenza_evidence(Patient)).
-diagnostic_result(Patient, mild_influenza_like_presentation) :-
-    once(mild_influenza_evidence(Patient)),
-    \+ strong_influenza_evidence(Patient).
-diagnostic_result(Patient, insufficient_evidence) :-
+% Bind each known patient before once/1 or negation: enumeration remains complete.
+diagnostic_result(Patient, Result) :-
     known_patient(Patient),
-    \+ strong_influenza_evidence(Patient),
-    \+ mild_influenza_evidence(Patient).
+    ( once(strong_influenza_evidence(Patient)) ->
+        Result = symptoms_consistent_with_influenza_model
+    ; once(mild_influenza_evidence(Patient)) ->
+        Result = mild_influenza_like_presentation
+    ; Result = insufficient_evidence
+    ).
 
-known_patient(Patient) :- observation(Patient, _).
-known_patient(Patient) :- temperature(Patient, _).
+known_patient(Patient) :-
+    setof(P, S^T^(observation(P, S); temperature(P, T)), Patients),
+    member(Patient, Patients).

@@ -2,7 +2,7 @@
 ; Учебная модель и демонстрация логического вывода, а не медицинский диагноз.
 
 (defglobal
-  ?*high-temperature* = 39.0
+  ?*high-temperature* = 39.5
   ?*subfebrile-min* = 37.1
   ?*subfebrile-max* = 38.0)
 
@@ -49,9 +49,9 @@
   (if (>= ?degrees ?*high-temperature*) then
     (return very-high))
   (if (and (>= ?degrees ?*subfebrile-min*)
-           (<= ?degrees ?*subfebrile-max*)) then
+           (< ?degrees ?*subfebrile-max*)) then
     (return subfebrile))
-  (if (> ?degrees ?*subfebrile-max*) then
+  (if (>= ?degrees ?*subfebrile-max*) then
     (return elevated))
   (return normal))
 
@@ -101,11 +101,10 @@
   (run)
   (show-result))
 
-; Convert numeric measurements into reusable symbolic evidence.
+; Intermediate evidence is completed before choosing a conclusion.
 (defrule classify-temperature
+  (declare (salience 50))
   (temperature (patient ?p) (degrees ?degrees) (fever-days ?days))
-  (test (neq (temperature-band ?degrees) normal))
-  (not (evidence (patient ?p) (kind temperature-classified)))
   =>
   (assert (evidence (patient ?p) (kind temperature-classified)
                     (explanation (temperature-band ?degrees))))
@@ -113,95 +112,86 @@
     (assert (evidence (patient ?p) (kind typical-fever-duration)
                       (explanation two-to-six-days)))))
 
-(defrule acute-fever-with-chills
-  (symptom (patient ?p) (name acute-onset) (present yes))
-  (temperature (patient ?p) (degrees ?t&:(> ?t 37.0)))
-  (symptom (patient ?p) (name chills) (present yes))
-  =>
-  (assert (evidence (patient ?p) (kind acute-fever-chills)
-                    (explanation acute-onset-with-fever-and-chills))))
-
-(defrule intoxication-pattern
-  (temperature (patient ?p) (degrees ?t&:(> ?t 37.0)))
-  (symptom (patient ?p) (name headache) (present yes))
-  (or (symptom (patient ?p) (name general-weakness) (present yes))
-      (symptom (patient ?p) (name fatigue) (present yes)))
-  =>
-  (assert (evidence (patient ?p) (kind intoxication-pattern)
-                    (explanation fever-headache-and-weakness))))
-
-(defrule characteristic-headache
-  (symptom (patient ?p) (name headache) (present yes))
-  (or (symptom (patient ?p) (name frontal-headache) (present yes))
-      (symptom (patient ?p) (name pain-behind-eyes) (present yes)))
-  (or (symptom (patient ?p) (name eye-movement-worsens-headache) (present yes))
-      (symptom (patient ?p) (name photophobia) (present yes)))
-  =>
-  (assert (evidence (patient ?p) (kind characteristic-headache)
-                    (explanation frontal-or-retroorbital-eye-related-pain))))
-
 (defrule systemic-aches
+  (declare (salience 50))
+  (symptom (patient ?p) (name general-weakness) (present yes))
   (or (symptom (patient ?p) (name muscle-pain) (present yes))
       (symptom (patient ?p) (name joint-pain) (present yes))
       (symptom (patient ?p) (name body-aches) (present yes)))
   =>
   (assert (evidence (patient ?p) (kind systemic-aches)
-                    (explanation muscle-joint-or-body-aches))))
+                    (explanation weakness-and-aches))))
 
-(defrule severe-neurological-signs
-  (patient (id ?p) (age-group ?age))
-  (temperature (patient ?p) (degrees ?t&:(>= ?t ?*high-temperature*)))
-  (or (symptom (patient ?p) (name vomiting) (present yes))
-      (symptom (patient ?p) (name hallucinations) (present yes))
-      (symptom (patient ?p) (name sleep-disorder) (present yes))
-      (and (test (eq ?age child))
-           (symptom (patient ?p) (name seizures) (present yes))))
+(defrule characteristic-headache
+  (declare (salience 50))
+  (or (symptom (patient ?p) (name frontal-headache) (present yes))
+      (symptom (patient ?p) (name pain-behind-eyes) (present yes)))
+  (symptom (patient ?p) (name eye-movement-worsens-headache) (present yes))
   =>
-  (assert (severity (patient ?p) (level severe))))
-
-(defrule marked-systemic-presentation
-  (temperature (patient ?p) (degrees ?t&:(>= ?t ?*high-temperature*)))
-  (evidence (patient ?p) (kind intoxication-pattern))
-  (evidence (patient ?p) (kind systemic-aches))
-  (not (severity (patient ?p)))
-  =>
-  (assert (severity (patient ?p) (level marked))))
+  (assert (evidence (patient ?p) (kind characteristic-headache)
+                    (explanation eye-movement-worsens-localized-headache))))
 
 (defrule strong-model-match
   (declare (salience 30))
   (patient (id ?p))
-  (evidence (patient ?p) (kind acute-fever-chills))
-  (evidence (patient ?p) (kind intoxication-pattern))
-  (or (evidence (patient ?p) (kind systemic-aches))
+  (symptom (patient ?p) (name acute-onset) (present yes))
+  (temperature (patient ?p) (degrees ?t&:(>= ?t ?*subfebrile-min*)))
+  (symptom (patient ?p) (name general-weakness) (present yes))
+  (or (and (symptom (patient ?p) (name chills) (present yes))
+           (evidence (patient ?p) (kind systemic-aches)))
       (evidence (patient ?p) (kind characteristic-headache)))
   (not (diagnostic-result (patient ?p)))
   =>
-  (assert (diagnostic-result
-            (patient ?p)
+  (assert (diagnostic-result (patient ?p)
             (conclusion consistent-with-influenza-model)
-            (explanation multiple-independent-influenza-patterns))))
+            (explanation acute-fever-and-characteristic-pattern))))
 
 (defrule mild-model-match
   (declare (salience 20))
   (patient (id ?p))
   (symptom (patient ?p) (name acute-onset) (present yes))
   (temperature (patient ?p) (degrees ?t&:(and (>= ?t ?*subfebrile-min*)
-                                               (<= ?t ?*subfebrile-max*))))
-  (evidence (patient ?p) (kind intoxication-pattern))
+                                              (< ?t ?*subfebrile-max*))))
+  (symptom (patient ?p) (name general-weakness) (present yes))
+  (or (symptom (patient ?p) (name headache) (present yes))
+      (symptom (patient ?p) (name body-aches) (present yes)))
   (not (diagnostic-result (patient ?p)))
   =>
-  (assert (severity (patient ?p) (level mild)))
-  (assert (diagnostic-result
-            (patient ?p)
+  (assert (diagnostic-result (patient ?p)
             (conclusion mild-influenza-like-presentation)
-            (explanation acute-subfebrile-presentation-with-systemic-symptoms))))
+            (explanation acute-subfebrile-weakness-with-headache-or-body-aches))))
+
+(defrule severe-neurological-signs
+  (declare (salience 10))
+  (temperature (patient ?p) (degrees ?t&:(>= ?t ?*high-temperature*)))
+  (or (symptom (patient ?p) (name vomiting) (present yes))
+      (symptom (patient ?p) (name hallucinations) (present yes))
+      (symptom (patient ?p) (name nervous-system-symptom) (present yes))
+      (symptom (patient ?p) (name seizures) (present yes)))
+  (not (severity (patient ?p)))
+  =>
+  (assert (severity (patient ?p) (level severe))))
+
+(defrule marked-systemic-presentation
+  (declare (salience 5))
+  (temperature (patient ?p) (degrees ?t&:(>= ?t ?*high-temperature*)))
+  (evidence (patient ?p) (kind systemic-aches))
+  (not (severity (patient ?p)))
+  =>
+  (assert (severity (patient ?p) (level marked))))
+
+(defrule mild-temperature
+  (temperature (patient ?p) (degrees ?t&:(and (>= ?t ?*subfebrile-min*)
+                                              (< ?t ?*subfebrile-max*))))
+  (not (severity (patient ?p)))
+  =>
+  (assert (severity (patient ?p) (level mild))))
 
 (defrule insufficient-evidence
   (declare (salience -100))
   (patient (id ?p))
   (not (diagnostic-result (patient ?p)))
   =>
-  (assert (diagnostic-result
-            (patient ?p)
+  (assert (diagnostic-result (patient ?p)
             (conclusion insufficient-evidence)
             (explanation criteria-of-the-educational-model-not-met))))

@@ -1,0 +1,4 @@
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/venv/bin/python -m src.web_scraper https://example.com
+No h1, h2 or h3 headings found.
+
+Exit code: 0

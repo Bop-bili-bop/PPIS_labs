@@ -33,7 +33,7 @@
    :id :mild
    :label "Mild influenza-like presentation"
    :explanation
-   "Acute onset and a mild fever occur together with headache, weakness and body or muscle aches."))
+   "Acute onset, subfebrile temperature and weakness accompany headache or body aches."))
 
 (defparameter *insufficient*
   (make-conclusion
@@ -42,59 +42,34 @@
    :explanation
    "The supplied answers do not form one of the influenza patterns represented by this educational tree."))
 
-;; Leaves and subtrees are shared deliberately: the representation is a binary
-;; decision graph, while every traversal still follows a single tree-shaped path.
+;; Each internal node asks one Boolean question. Expand branches when drawing
+;; so the report shows a tree even though identical suffixes share Lisp objects.
+(defun decision (id prompt yes no)
+  (make-question :id id :prompt prompt :yes-branch yes :no-branch no))
+
 (defparameter *influenza-tree*
-  (make-question
-   :id :acute-onset
-   :prompt "Did the symptoms begin acutely?"
-   :no-branch *insufficient*
-   :yes-branch
-   (make-question
-    :id :elevated-temperature
-    :prompt "Is body temperature elevated?"
-    :no-branch *insufficient*
-    :yes-branch
-    (make-question
-     :id :very-high-temperature
-     :prompt "Is the temperature very high (rapidly rising toward 40 C)?"
-     :yes-branch
-     (make-question
-      :id :chills
-      :prompt "Are chills present?"
-      :yes-branch
-      (make-question
-       :id :headache
-       :prompt "Is headache present?"
-       :yes-branch *consistent*
-       :no-branch *insufficient*)
-      :no-branch
-      (make-question
-       :id :headache
-       :prompt "Is headache present?"
-       :no-branch *insufficient*
-       :yes-branch
-       (make-question
-        :id :general-weakness
-        :prompt "Is general weakness present?"
-        :yes-branch *consistent*
-        :no-branch *insufficient*)))
-     :no-branch
-     (make-question
-      :id :headache
-      :prompt "Is headache present?"
-      :no-branch *insufficient*
-      :yes-branch
-      (make-question
-       :id :general-weakness
-       :prompt "Is general weakness present?"
-       :no-branch *insufficient*
-       :yes-branch
-       (make-question
-        :id :muscle-or-body-aches
-        :prompt "Are muscle pain or body aches present?"
-        :yes-branch *mild*
-        :no-branch *insufficient*)))))))
+  (let* ((mild-tail
+           (decision :subfebrile "Is 37.1 <= temperature < 38.0 C?"
+             (decision :headache "Is headache present?" *mild*
+               (decision :body-aches "Are body aches present?" *mild* *insufficient*))
+             *insufficient*))
+         (eye-movement
+           (decision :eye-movement "Does eye movement worsen the headache?"
+                     *consistent* mild-tail))
+         (characteristic
+           (decision :frontal-headache "Is the headache frontal?" eye-movement
+             (decision :pain-behind-eyes "Is there pain behind the eyes?"
+                       eye-movement mild-tail))))
+    (decision :acute-onset "Did symptoms begin acutely?"
+      (decision :elevated-temperature "Is temperature >= 37.1 C?"
+        (decision :general-weakness "Is general weakness present?"
+          (decision :chills "Are chills present?"
+            (decision :aches "Is there muscle, joint or body pain?"
+                      *consistent* characteristic)
+            characteristic)
+          *insufficient*)
+        *insufficient*)
+      *insufficient*)))
 
 (defun ask-yes-no (prompt &optional (input *standard-input*)
                                     (output *standard-output*))
@@ -148,19 +123,21 @@ unknown observation from being silently interpreted as NO."
      (let ((entry (assoc (question-id node) answers)))
        (unless entry
          (error "No deterministic answer supplied for ~S." (question-id node)))
-       (not (null (cdr entry)))))))
+       (unless (member (cdr entry) '(t nil))
+         (error "Answer must be T or NIL for ~S." (question-id node)))
+       (cdr entry)))))
 
 (defparameter *test-scenarios*
   (list
    (list :name "strong influenza pattern"
          :answers '((:acute-onset . t) (:elevated-temperature . t)
-                    (:very-high-temperature . t) (:chills . t)
-                    (:headache . t))
+                    (:general-weakness . t) (:chills . t) (:aches . t))
          :expected :consistent)
    (list :name "mild influenza-like pattern"
          :answers '((:acute-onset . t) (:elevated-temperature . t)
-                    (:very-high-temperature . nil) (:headache . t)
-                    (:general-weakness . t) (:muscle-or-body-aches . t))
+                    (:general-weakness . t) (:chills . nil)
+                    (:frontal-headache . nil) (:pain-behind-eyes . nil)
+                    (:subfebrile . t) (:headache . t))
          :expected :mild)
    (list :name "insufficient evidence"
          :answers '((:acute-onset . nil))
@@ -179,3 +156,25 @@ unknown observation from being silently interpreted as NO."
               "Scenario ~A expected ~S but got ~S."
               (getf scenario :name) expected actual))))
 
+
+(defun export-dot (&optional (path "lab2/influenza_tree.dot"))
+  "Export the actual runtime tree; duplicate shared suffixes for a binary tree."
+  (with-open-file (out path :direction :output :if-exists :supersede)
+    (format out "digraph Influenza {~%node [fontname=Arial];~%")
+    (let ((counter 0))
+      (labels ((visit (node)
+                 (let ((id (incf counter)))
+                   (etypecase node
+                     (conclusion
+                      (format out "n~D [shape=box, label=~S];~%" id
+                              (string-downcase (symbol-name (conclusion-id node)))))
+                     (question
+                      (format out "n~D [shape=diamond, label=~S];~%" id
+                              (question-prompt node))
+                      (dolist (branch (list (cons "yes" (question-yes-branch node))
+                                           (cons "no" (question-no-branch node))))
+                        (format out "n~D -> n~D [label=~S];~%"
+                                id (visit (cdr branch)) (car branch)))))
+                   id)))
+        (visit *influenza-tree*)))
+    (format out "}~%")))

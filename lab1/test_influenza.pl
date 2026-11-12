@@ -25,4 +25,9 @@ test(backtracking_over_patterns, true(Patterns ==
 test(no_false_strong_conclusion, [fail]) :-
     diagnostic_result(vira, symptoms_consistent_with_influenza_model).
 
+test(enumerates_each_patient_once, true(Patients == [alina, boris, vira])) :-
+    findall(Patient, diagnostic_result(Patient, _), Patients).
+
+test(unknown_patient, [fail]) :- diagnostic_result(unknown, _).
+
 :- end_tests(influenza).

@@ -1,0 +1,7 @@
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/venv/bin/python -m src.lcs ABCBDAB BDCABA
+First string: ABCBDAB
+Second string: BDCABA
+LCS: BDAB
+Length: 4
+
+Exit code: 0

@@ -26,7 +26,7 @@ def page_context(**updates: object) -> dict[str, object]:
         "analysis": None,
         "headings": None,
         "error": None,
-        "gemini_configured": bool(os.getenv("GEMINI_API_KEY", "").strip()),
+        "openai_configured": bool(os.getenv("OPENAI_API_KEY", "").strip()),
     }
     context.update(updates)
     return context
@@ -62,4 +62,4 @@ def scrape():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="127.0.0.1", debug=False)

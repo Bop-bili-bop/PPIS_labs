@@ -1,41 +1,38 @@
-# Лабораторна робота №4 — Python, Gemini API та LCS
+# №4 — Python, ChatGPT/OpenAI та LCS
 
-Робота використовує офіційний пакет `google-genai`, а не OpenAI. Ключ ніколи
-не записується в код або Git.
+[Повний звіт із кодом, алгоритмом і фактичними результатами](REPORT.md).
 
-## Встановлення (Python 3.11+)
-
-```bash
-cd lab-4
-python -m venv .venv
-```
-
-macOS/Linux: `source .venv/bin/activate`  
-Windows PowerShell: `.venv\Scripts\Activate.ps1`
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-## Gemini та чат-бот
-
-```bash
-cp .env.example .env       # Windows: copy .env.example .env
-# Відредагуйте .env і замініть лише значення GEMINI_API_KEY
-python -m src.chatbot
-```
-
-Без ключа програма пояснює налаштування і завершується без traceback. Модель
-за замовчуванням задається змінною `GEMINI_MODEL=gemini-2.5-flash`.
-
-## LCS і тести
+У цьому каталозі після встановлення кореневих залежностей:
 
 ```bash
 python -m src.lcs ABCBDAB BDCABA
-pytest -q
+python -m pytest -q
 ```
 
-LCS може мати декілька правильних відповідей однакової довжини. Тести
-перевіряють довжину та належність підпослідовності обом вхідним рядкам.
-Підготовлений запит до Gemini є в `prompts/algorithm-generation-prompt.txt`;
-збережених вигаданих відповідей API немає.
+Для API:
+
+```bash
+cp .env.example .env
+```
+
+У `.env` задайте `OPENAI_API_KEY` своїм ключем із платформи OpenAI та
+`OPENAI_MODEL` моделлю, доступною вашому акаунту. Не додавайте `.env` до Git.
+Модель навмисно не зафіксована застарілим ім'ям із прикладу методички.
+
+```bash
+python -m src.chatbot
+python -m src.generate_algorithm
+```
+
+Перша команда запускає діалог з історією та виходом exit/quit. Друга надсилає
+підготовлений LCS-запит і друкує відповідь без виконання згенерованого коду.
+Виклики API потребують налаштованого акаунта та можуть витрачати його кошти.
+Без ключа програма завершується з поясненням, кодом 1 і без traceback.
+
+[Офіційна документація Responses API](https://developers.openai.com/api/docs/guides/text?lang=python).
+Живий API-запит у цьому виконанні не здійснювався: ключ не надавався.
+Логіка клієнта перевірена з підміною API; це не перевірка доступності сервісу.
+Алгоритм LCS і всі його приклади працюють без ключа.
+
+Додатковий початковий Gemini-клієнт залишено у `src/gemini_client.py`;
+він потребує окремого `requirements-gemini.txt` і змінних GEMINI_API_KEY/GEMINI_MODEL.

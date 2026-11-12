@@ -1,50 +1,29 @@
-# Лабораторная работа 2 — вариант 6 «Грип»
+# №2 — Common Lisp, варіант 6 «Грип»
 
-`influenza_tree.lisp` реализует рекурсивный обход бинарного дерева решений на
-Common Lisp. Модель использует ту же предметную область, что и база знаний:
-острое начало, повышенную или очень высокую температуру, озноб, головную боль,
-общую слабость, мышечную боль и ломоту в теле.
+[Повний звіт](REPORT.md) · [Двійкове дерево SVG](influenza_tree.svg).
 
-Это **учебный прототип экспертной системы**, а не медицинское диагностическое
-средство. Листья дерева означают только соответствие введённых наблюдений
-учебной модели:
+Інтерактивний запуск із кореня репозиторію:
 
-1. симптомы соответствуют модели гриппа;
-2. лёгкая гриппоподобная картина;
-3. недостаточно данных.
-
-## Запуск
-
-В SBCL:
-
-```lisp
-(load "lab2/influenza_tree.lisp")
-(influenza-tree:diagnose-interactively)
-(influenza-tree:run-test-scenarios)
+```bash
+sbcl --load lab2/influenza_tree.lisp --eval '(influenza-tree:diagnose-interactively)'
 ```
 
-`diagnose-interactively` принимает ответы `yes`/`y` и `no`/`n`.
-`run-test-scenarios` детерминированно проверяет три случая: выраженную картину,
-лёгкую картину и недостаточные данные. Для программного запуска произвольного
-сценария предназначена `diagnose-with-answers`, например:
+Сценарії та графічний експорт:
 
-```lisp
-(influenza-tree:diagnose-with-answers
- '((:acute-onset . t)
-   (:elevated-temperature . t)
-   (:very-high-temperature . t)
-   (:chills . t)
-   (:headache . t)))
-```
-
-## Графическое представление
-
-Файл `influenza_tree.dot` содержит Graphviz-представление того же дерева. Если
-Graphviz установлен, текстовый SVG создаётся командой:
-
-```sh
+```bash
+sbcl --noinform --non-interactive --load lab2/influenza_tree.lisp --eval '(influenza-tree:run-test-scenarios)'
+sbcl --noinform --non-interactive --load lab2/influenza_tree.lisp --eval '(influenza-tree::export-dot)'
 dot -Tsvg lab2/influenza_tree.dot -o lab2/influenza_tree.svg
 ```
 
+Детермінований виклик у Lisp:
 
-SVG выбран вместо бинарного PNG, чтобы диаграмму можно было просматривать и проверять в обычном текстовом Git diff.
+```lisp
+(influenza-tree:diagnose-with-answers
+ '((:acute-onset . t) (:elevated-temperature . t)
+   (:general-weakness . t) (:chills . t) (:aches . t)))
+```
+
+Потрібні відповіді лише для досягнутих вузлів. Відповідь — T або NIL;
+відсутні дані викликають помилку. При роботі з консоллю приймаються yes/y/no/n.
+Рішення відповідають тим самим формулам, що у Prolog і CLIPS.

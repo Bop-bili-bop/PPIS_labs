@@ -1,0 +1,5 @@
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/venv/bin/python scripts/check_models.py
+PASS: 6144 input cases x 3 runtimes = 18432 conclusions.
+Includes 37.0 / 37.1 / 37.99 / 38.0 / 39.49 / 39.5 C boundaries.
+
+Exit code: 0

@@ -1,0 +1,52 @@
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/venv/bin/python lab3/run.py
+PASS: 3 CLIPS demonstration scenarios
+
+=== Scenario: strong ===
+f-1     (session (educational-only yes))
+f-2     (patient (id anna) (age-group adult))
+f-3     (temperature (patient anna) (degrees 39.7) (fever-days 3))
+f-4     (symptom (patient anna) (name acute-onset) (present yes))
+f-5     (symptom (patient anna) (name chills) (present yes))
+f-6     (symptom (patient anna) (name headache) (present yes))
+f-7     (symptom (patient anna) (name frontal-headache) (present yes))
+f-8     (symptom (patient anna) (name eye-movement-worsens-headache) (present yes))
+f-9     (symptom (patient anna) (name general-weakness) (present yes))
+f-10    (symptom (patient anna) (name muscle-pain) (present yes))
+f-11    (symptom (patient anna) (name photophobia) (present yes))
+For a total of 11 facts.
+FIRE    1 systemic-aches: f-9,f-10
+FIRE    2 characteristic-headache: f-7,f-8
+FIRE    3 classify-temperature: f-3
+FIRE    4 strong-model-match: f-2,f-4,f-3,f-9,f-13,*
+FIRE    5 marked-systemic-presentation: f-3,f-12,*
+Final result for anna: consistent-with-influenza-model
+Reason: acute-fever-and-characteristic-pattern
+
+=== Scenario: mild ===
+f-1     (session (educational-only yes))
+f-2     (patient (id boris) (age-group adult))
+f-3     (temperature (patient boris) (degrees 37.6) (fever-days 2))
+f-4     (symptom (patient boris) (name acute-onset) (present yes))
+f-5     (symptom (patient boris) (name headache) (present yes))
+f-6     (symptom (patient boris) (name general-weakness) (present yes))
+f-7     (symptom (patient boris) (name body-aches) (present yes))
+For a total of 7 facts.
+FIRE    1 systemic-aches: f-6,f-7
+FIRE    2 classify-temperature: f-3
+FIRE    3 mild-model-match: f-2,f-4,f-3,f-6,f-7,*
+FIRE    4 mild-temperature: f-3,*
+Final result for boris: mild-influenza-like-presentation
+Reason: acute-subfebrile-weakness-with-headache-or-body-aches
+
+=== Scenario: insufficient ===
+f-1     (session (educational-only yes))
+f-2     (patient (id vera) (age-group adult))
+f-3     (temperature (patient vera) (degrees 36.7) (fever-days 0))
+f-4     (symptom (patient vera) (name tearing) (present yes))
+For a total of 4 facts.
+FIRE    1 classify-temperature: f-3
+FIRE    2 insufficient-evidence: f-2,*
+Final result for vera: insufficient-evidence
+Reason: criteria-of-the-educational-model-not-met
+
+Exit code: 0

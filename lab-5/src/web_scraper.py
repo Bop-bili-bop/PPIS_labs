@@ -22,7 +22,7 @@ def validate_url(url: str) -> None:
         raise ValueError("URL must be an absolute http:// or https:// address.")
 
 
-def parse_headings(html: str) -> list[dict[str, str]]:
+def parse_headings(html: str | bytes) -> list[dict[str, str]]:
     """Parse h1/h2/h3 elements from HTML without performing a network call."""
     soup = BeautifulSoup(html, "html.parser")
     return [
@@ -43,7 +43,11 @@ def get_headings(url: str, timeout: float = 10.0) -> list[dict[str, str]]:
         response.raise_for_status()
     except requests.RequestException as exc:
         raise ScraperError(f"Could not retrieve {url}: {exc}") from exc
-    return parse_headings(response.text)
+    # Requests defaults to Latin-1 for text/html without a charset header.
+    # Let BeautifulSoup read the HTML meta charset from the original bytes.
+    html = (response.text if "charset=" in response.headers.get("Content-Type", "").lower()
+            else response.content)
+    return parse_headings(html)
 
 
 def main() -> int:

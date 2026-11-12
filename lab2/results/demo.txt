@@ -1,0 +1,6 @@
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/runtime/root/usr/bin/sbcl --core /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/runtime/root/usr/lib/sbcl/sbcl.core --noinform --non-interactive --load lab2/influenza_tree.lisp --eval (influenza-tree:run-test-scenarios)
+strong influenza pattern: Symptoms are consistent with the influenza knowledge model (PASS)
+mild influenza-like pattern: Mild influenza-like presentation (PASS)
+insufficient evidence: Insufficient evidence (PASS)
+
+Exit code: 0

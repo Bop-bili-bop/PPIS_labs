@@ -1,16 +1,17 @@
-$ python -m src.lcs ABCBDAB BDCABA
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/venv/bin/python -m src.lcs ABCBDAB BDCABA
 First string: ABCBDAB
 Second string: BDCABA
 LCS: BDAB
 Length: 4
 
-$ pytest -q
-.....                                                                    [100%]
-5 passed in 0.01s
+Exit code: 0
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/venv/bin/python -m pytest -q
+............                                                             [100%]
+12 passed in 0.65s
 
-$ env -u GEMINI_API_KEY python -m src.chatbot
-Gemini chatbot
-Type 'exit' or 'quit' to finish.
-Gemini API key is not configured. Copy .env.example to .env and set GEMINI_API_KEY.
+Exit code: 0
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/venv/bin/python -m src.chatbot
+OpenAI chatbot. Type 'exit' or 'quit' to finish.
+Set OPENAI_API_KEY and OPENAI_MODEL in lab-4/.env or the environment.
 
-Gemini API integration implemented but was not executed because GEMINI_API_KEY is intentionally not stored in the repository.
+Exit code: 1
