@@ -1,0 +1,5 @@
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/venv/bin/python -m src.chatbot
+OpenAI chatbot. Type 'exit' or 'quit' to finish.
+Set OPENAI_API_KEY and OPENAI_MODEL in lab-4-5/.env or the environment.
+
+Exit code: 1

@@ -13,7 +13,7 @@ class QuietHandler(SimpleHTTPRequestHandler):
 
 @contextmanager
 def fixture_server():
-    directory = Path(__file__).resolve().parents[1]/'lab-5/data'
+    directory = Path(__file__).resolve().parents[1]/'lab-4-5/data'
     server = ThreadingHTTPServer(('127.0.0.1', 0), partial(QuietHandler, directory=directory))
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()

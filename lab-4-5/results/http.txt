@@ -1,0 +1,4 @@
+Real HTTP server: http://127.0.0.1:5055
+GET / -> 200
+POST /analyze category=A -> 200; 3 rows; mean 526.67
+POST /scrape http://127.0.0.1:45125/sample_page.html -> 200; 3 headings from local HTTP fixture

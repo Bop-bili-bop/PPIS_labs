@@ -1,3 +1,2 @@
--r lab-4/requirements.txt
--r lab-5/requirements.txt
+-r lab-4-5/requirements.txt
 clipspy>=1.0,<2.0

@@ -27,8 +27,8 @@ def main():
         for folder, names in [('lab1', ['demo', 'tests']),
                               ('lab2', ['demo', 'interactive']),
                               ('lab3', ['demo', 'cross-model']),
-                              ('lab-4', ['demo', 'tests', 'missing-key']),
-                              ('lab-5', ['demo', 'scraper', 'scraper-fixture', 'tests'])]:
+                              ('lab-4-5', ['lcs', 'analysis', 'tests', 'missing-key',
+                                           'scraper', 'scraper-fixture'])]:
             out = ROOT/folder/'screenshots'
             out.mkdir(exist_ok=True)
             for name in names:
@@ -44,7 +44,7 @@ def main():
                 page.screenshot(path=str(out/f'{name}.png'), full_page=True)
         server = subprocess.Popen([sys.executable, '-m', 'flask', '--app', 'src.app',
                                    'run', '--host', '127.0.0.1', '--port', '5055'],
-                                  cwd=ROOT/'lab-5', stdout=subprocess.DEVNULL,
+                                  cwd=ROOT/'lab-4-5', stdout=subprocess.DEVNULL,
                                   stderr=subprocess.DEVNULL)
         try:
             for _ in range(60):
@@ -59,13 +59,13 @@ def main():
             page.goto('http://127.0.0.1:5055')
             page.get_by_role('button', name='Обчислити середню ціну').click()
             page.get_by_text('Рядків: 3; середня ціна: 526.67').wait_for()
-            page.screenshot(path=str(ROOT/'lab-5/screenshots/flask-analysis.png'), full_page=True)
+            page.screenshot(path=str(ROOT/'lab-4-5/screenshots/flask-analysis.png'), full_page=True)
             with fixture_server() as url:
                 page.get_by_label('Абсолютна HTTP(S)-адреса').fill(url)
                 page.get_by_role('button', name='Отримати заголовки').click()
                 page.get_by_text('ПІІС: навчальний парсер', exact=False).wait_for()
-                page.screenshot(path=str(ROOT/'lab-5/screenshots/flask-scraper.png'), full_page=True)
-                (ROOT/'lab-5/results/http.txt').write_text(
+                page.screenshot(path=str(ROOT/'lab-4-5/screenshots/flask-scraper.png'), full_page=True)
+                (ROOT/'lab-4-5/results/http.txt').write_text(
                     'Real HTTP server: http://127.0.0.1:5055\n'
                     'GET / -> 200\nPOST /analyze category=A -> 200; 3 rows; mean 526.67\n'
                     f'POST /scrape {url} -> 200; 3 headings from local HTTP fixture\n')

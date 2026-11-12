@@ -1,6 +1,0 @@
-$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/venv/bin/python -m src.web_scraper http://127.0.0.1:40489/sample_page.html
-h1: ПІІС: навчальний парсер
-h2: Аналіз даних
-h3: Категорія A
-
-Exit code: 0

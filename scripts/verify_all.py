@@ -43,20 +43,18 @@ def main():
             input='invalid\nyes\nyes\nyes\nyes\nyes\n')
     execute('lab3', 'demo', [PYTHON, 'lab3/run.py'])
     execute('lab3', 'cross-model', [PYTHON, 'scripts/check_models.py'])
-    for folder in ('lab-4', 'lab-5'):
-        execute(folder, 'tests', [PYTHON, '-m', 'pytest', '-q'], cwd=ROOT/folder)
-    execute('lab-4', 'demo', [PYTHON, '-m', 'src.lcs', 'ABCBDAB', 'BDCABA'],
-            cwd=ROOT/'lab-4')
+    folder = 'lab-4-5'
+    execute(folder, 'tests', [PYTHON, '-m', 'pytest', '-q'], cwd=ROOT/folder)
+    execute(folder, 'lcs', [PYTHON, '-m', 'src.lcs', 'ABCBDAB', 'BDCABA'], cwd=ROOT/folder)
     env = dict(os.environ, OPENAI_API_KEY='', OPENAI_MODEL='', PYTHON_DOTENV_DISABLED='1')
-    execute('lab-4', 'missing-key', [PYTHON, '-m', 'src.chatbot'],
-            cwd=ROOT/'lab-4', expected=1, env=env)
-    execute('lab-5', 'demo', [PYTHON, '-m', 'src.data_analysis'], cwd=ROOT/'lab-5')
+    execute(folder, 'missing-key', [PYTHON, '-m', 'src.chatbot'],
+            cwd=ROOT/folder, expected=1, env=env)
+    execute(folder, 'analysis', [PYTHON, '-m', 'src.data_analysis'], cwd=ROOT/folder)
     if not args.skip_network:
-        execute('lab-5', 'scraper', [PYTHON, '-m', 'src.web_scraper', 'https://example.com'],
-                cwd=ROOT/'lab-5')
+        execute(folder, 'scraper', [PYTHON, '-m', 'src.web_scraper', 'https://example.com'],
+                cwd=ROOT/folder)
     with fixture_server() as url:
-        execute('lab-5', 'scraper-fixture', [PYTHON, '-m', 'src.web_scraper', url],
-                cwd=ROOT/'lab-5')
+        execute(folder, 'scraper-fixture', [PYTHON, '-m', 'src.web_scraper', url], cwd=ROOT/folder)
     print('PASS: all lab checks. Live OpenAI API: NOT RUN (no credentials supplied).')
 
 

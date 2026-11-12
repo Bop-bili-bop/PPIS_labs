@@ -1,6 +1,6 @@
-# ПІІС — лабораторні роботи №1–5
+# ПІІС — лабораторні роботи №1, №2, №3, №4–5
 
-Варіант №6 **«Грип»** для №1–3. Для №4 збережено алгоритм **LCS** з
+Варіант №6 **«Грип»** для №1–3. Для №4–5 збережено алгоритм **LCS** з
 початкового репозиторію та прикладу методички: окремий список варіантів №4–5
 у наданому PDF відсутній. Реалізації — навчальні моделі за текстом завдання.
 
@@ -9,12 +9,11 @@
 | 1 | [Prolog: база знань](lab1/README.md), зовнішні дані | [REPORT](lab1/REPORT.md) |
 | 2 | [Common Lisp: двійкове дерево](lab2/README.md), [схема](lab2/influenza_tree.svg) | [REPORT](lab2/REPORT.md) |
 | 3 | [CLIPS: продукційні правила](lab3/README.md), трасування активацій | [REPORT](lab3/REPORT.md) |
-| 4 | [Python: OpenAI API, чат, LCS](lab-4/README.md) | [REPORT](lab-4/REPORT.md) |
-| 5 | [Python: BeautifulSoup, pandas, Flask](lab-5/README.md) | [REPORT](lab-5/REPORT.md) |
+| 4–5 | [Python: OpenAI, LCS, парсинг, pandas і Flask](lab-4-5/README.md) | [Єдиний звіт](lab-4-5/REPORT.md) |
 
 Кожен звіт містить завдання, пояснення, текст програм, результати та висновки.
 Скріншоти журналів знаходяться в `screenshots/`, початкові журнали — у
-`results/`. У №5 додано скріншоти справжнього Flask-застосунку в Chromium.
+`results/`. У №4–5 додано скріншоти справжнього Flask-застосунку в Chromium.
 
 ## Встановлення
 
@@ -51,13 +50,11 @@ swipl -q -g run_tests -t halt lab1/test_influenza.pl
 sbcl --noinform --non-interactive --load lab2/influenza_tree.lisp --eval '(influenza-tree:run-test-scenarios)'
 python lab3/run.py
 python scripts/check_models.py
-(cd lab-4 && python -m pytest -q)
-(cd lab-5 && python -m pytest -q)
-(cd lab-5 && python -m src.app)
+(cd lab-4-5 && python -m pytest -q)
+(cd lab-4-5 && python -m src.app)
 ```
 
-Обидва Python-каталоги містять пакет `src`, тому pytest для них запускається
-**окремими процесами**, як у скрипті вище.
+Лабораторна №4–5 має один пакет `src`, один набір залежностей та спільний запуск pytest.
 
 ## Перевірені результати — 12.11.2026
 
@@ -65,22 +62,22 @@ python scripts/check_models.py
 - Lisp: **3 сценарії** та інтерактивний обхід з повтором некоректного вводу.
 - CLIPS: **3 сценарії**, вихідні факти та трасування `FIRE`.
 - Спільна модель: **6144 набори × 3 середовища = 18432 узгоджених висновки**.
-- Python: **12 тестів №4 + 18 тестів №5 = 30 тестів**.
+- Python: **30 тестів єдиної лабораторної №4–5**.
 - LCS `ABCBDAB` / `BDCABA`: довжина **4**.
 - CSV категорії A: **3 рядки**, середня ціна **526.67**.
 - Flask: запуск сервера й обох форм через реальні HTTP-запити в Chromium.
 
 ## OpenAI API
 
-У №4 реалізовано OpenAI Responses API відповідно до методички. Ключ та
-модель задаються в `lab-4/.env` або змінних `OPENAI_API_KEY`, `OPENAI_MODEL`.
-Інструкції: [лабораторна №4](lab-4/README.md).
+У №4–5 реалізовано OpenAI Responses API відповідно до методички. Ключ та
+модель задаються в `lab-4-5/.env` або змінних `OPENAI_API_KEY`, `OPENAI_MODEL`.
+Інструкції: [лабораторна №4–5](lab-4-5/README.md).
 
 **Живий OpenAI API-запит і створення ключа не виконано:** облікові дані не
 надавалися. Тести з підміною API перевіряють код, але не доступ до сервісу.
 Звіти прямо відображають цю межу; вигаданих API-відповідей немає.
 Початковий `gemini_client.py` залишено як додатковий приклад; він не потрібний
-для виконання робіт, його залежності — у `lab-4/requirements-gemini.txt`.
+для виконання робіт, його залежності — у `lab-4-5/requirements-gemini.txt`.
 
 ## Оновлення зображень
 

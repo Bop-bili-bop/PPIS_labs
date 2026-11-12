@@ -1,5 +1,5 @@
 $ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/runtime/root/usr/bin/swipl -q -g run_tests -t halt lab1/test_influenza.pl
-% [1/9] influenza:strong_example .................... passed (0.008 sec)
+% [1/9] influenza:strong_example .................... passed (0.004 sec)
 % [2/9] influenza:mild_example ...................... passed (0.000 sec)
 % [3/9] influenza:insufficient_example .............. passed (0.000 sec)
 % [4/9] influenza:high_temperature_is_inferred ...... passed (0.000 sec)
