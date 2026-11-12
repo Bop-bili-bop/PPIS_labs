@@ -1,0 +1,6 @@
+$ /home/kyrylo/Documents/Codex/2026-11-12/https-github-com-bop-bili-bop/work/runtime/root/usr/bin/swipl -q -s lab1/influenza.pl -g forall(diagnostic_result(P,R),format("~w: ~w~n",[P,R])) -t halt
+alina: symptoms_consistent_with_influenza_model
+boris: mild_influenza_like_presentation
+vira: insufficient_evidence
+
+Exit code: 0

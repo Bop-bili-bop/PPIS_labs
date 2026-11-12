@@ -1,0 +1,2 @@
+-r lab-4-5/requirements.txt
+clipspy>=1.0,<2.0
